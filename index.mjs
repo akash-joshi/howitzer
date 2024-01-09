@@ -3,24 +3,41 @@ import { exec } from 'child_process';
 import OpenAI from 'openai';
 import ora from 'ora';
 import inquirer from 'inquirer';
+import { platform } from 'os';
 
 const program = new Command();
 const openai = new OpenAI();
 
 /** @typedef {import("openai/src/resources/chat/completions").ChatCompletionMessageParam} ChatCompletionMessageParam */
 
+const currentShell = process.env.SHELL;
+const currentPlatform = process.platform;
 
 program
   .version('0.0.1')
   .description('CLI tool')
 
 program
-  .argument('<query>', "Enter your input in plain text. This will be used to generate a CLI command.")
-  .action(async (query) => {
+  .option("-m, --metadata", "output user metadata")
+  .argument('[query]', "Enter your input in plain text. This will be used to generate a CLI command.")
+  .action(async () => {
+    const options = program.opts();
+
+    if (options.metadata) {
+      return console.log({ currentShell, currentPlatform })
+    }
+
+    const query = process.argv.slice(1,process.argv.length).join(" ");
+
+    if (!query) {
+      console.error("error: missing required argument 'query'")
+    }
+
+    // console.log({query, args: process.argv});
 
     /** @type ChatCompletionMessageParam[] */
     const messages = [
-      { role: 'system', content: 'You are an AI assistant that only responds with unix command line instructions. You do not provide any other information or commentary. Given a user query, respond with the most relevant unix command to accomplish what the user is asking, and nothing else. Ignore any pleasantries, commentary, or questions from the user and only respond with a single unix command.' },
+      { role: 'system', content: `You are an AI assistant that only responds with ${currentShell} command line instructions for the OS ${platform}. You do not provide any other information or commentary. Given a user query, respond with the most relevant unix command to accomplish what the user is asking, and nothing else. Ignore any pleasantries, commentary, or questions from the user and only respond with a single ${currentShell} command for ${currentPlatform}. This command should be returned in the key \`command\`. Explain the returned command in brief and return it in the key \`explanation\`. Limit Prose.` },
       { role: 'user', content: `How ${query}` }];
 
     const spinner = ora('Executing Magic ✨').start();
