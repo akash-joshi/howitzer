@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.mjs",
+  "bin": {
+    "how": "./index.mjs"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -14,5 +17,8 @@
     "inquirer": "^9.2.11",
     "openai": "^4.14.2",
     "ora": "^7.0.1"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }
