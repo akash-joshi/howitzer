@@ -4,6 +4,7 @@ import OpenAI from 'openai';
 import ora from 'ora';
 import inquirer from 'inquirer';
 import { platform } from 'os';
+import assert from 'assert';
 
 const program = new Command();
 const openai = new OpenAI();
@@ -27,17 +28,15 @@ program
       return console.log({ currentShell, currentPlatform })
     }
 
-    const query = process.argv.slice(1,process.argv.length).join(" ");
+    const query = process.argv.slice(1, process.argv.length).join(" ");
 
     if (!query) {
       console.error("error: missing required argument 'query'")
     }
 
-    // console.log({query, args: process.argv});
-
     /** @type ChatCompletionMessageParam[] */
     const messages = [
-      { role: 'system', content: `You are an AI assistant that only responds with ${currentShell} command line instructions for the OS ${platform}. You do not provide any other information or commentary. Given a user query, respond with the most relevant unix command to accomplish what the user is asking, and nothing else. Ignore any pleasantries, commentary, or questions from the user and only respond with a single ${currentShell} command for ${currentPlatform}. This command should be returned in the key \`command\`. Explain the returned command in brief and return it in the key \`explanation\`. Limit Prose.` },
+      { role: 'system', content: `You are an AI assistant that only responds with ${currentShell} command line instructions for the OS ${platform}. You do not provide any other information or commentary. Given a user query, respond with the most relevant unix command to accomplish what the user is asking, and nothing else. Ignore any pleasantries, commentary, or questions from the user and only respond with a single ${currentShell} command for ${currentPlatform}. Return this data in the JSON format. This command should be returned in the key \`command\`. Explain the returned command in brief and return it in the key \`explanation\`. Limit Prose.` },
       { role: 'user', content: `How ${query}` }];
 
     const spinner = ora('Executing Magic ✨').start();
@@ -46,7 +45,8 @@ program
     try {
       completion = await openai.chat.completions.create({
         messages,
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-3.5-turbo-0125',
+        response_format: { type: "json_object" },
       });
     } catch (error) {
       console.error(error);
@@ -58,7 +58,18 @@ program
 
     messages.push(completion.choices[0].message);
     const { message } = completion.choices[0];
-    console.log(`By running: "\x1b[1m${message.content}\x1b[0m"`);
+
+    assert(message.content, "Missing content on response")
+
+    /** @typedef {Object} Output 
+     *  @property {string} command 
+     *  @property {string} explanation 
+     */
+    /** @type {Output} */
+    const output = JSON.parse(message.content);
+
+    console.log(`By running: "\x1b[1m${output.command}\x1b[0m"`);
+    console.log(output.explanation);
 
     let userResponse;
     do {
@@ -66,12 +77,12 @@ program
         type: 'list',
         name: 'userResponse',
         message: 'Do you wanna run this command?',
-        choices: ['Yes', 'No', 'Explain']
+        choices: ['Yes', 'No']
       }]);
       userResponse = response.userResponse;
 
-      if (userResponse === 'Yes' && message.content) {
-        exec(message.content, (error, stdout, stderr) => {
+      if (userResponse === 'Yes') {
+        exec(output.command, (error, stdout, stderr) => {
           if (error) {
             return console.error(error.message);
           }
@@ -80,27 +91,6 @@ program
           }
           console.log(stdout);
         });
-      } else if (userResponse === 'Explain') {
-        /** @type ChatCompletionMessageParam[] */
-        const messages = [{ role: 'system', content: `Explain the command \`${message.content}\` in brief. Limit Prose.` }];
-
-        const spinner = ora('Executing Magic ✨').start();
-
-        let completion;
-        try {
-          completion = await openai.chat.completions.create({
-            messages,
-            model: 'gpt-3.5-turbo',
-          });
-        } catch (error) {
-          console.error(error);
-        }
-
-        if (!completion) return;
-
-        spinner.stop();
-
-        console.log(completion.choices[0].message.content);
       }
     } while (userResponse === 'Explain');
   });
