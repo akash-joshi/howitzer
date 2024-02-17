@@ -1,7 +1,7 @@
 {
-  "name": "how",
-  "version": "1.0.0",
-  "description": "",
+  "name": "hey-how",
+  "version": "1.0.1",
+  "description": "CLI Tool",
   "main": "index.mjs",
   "bin": {
     "how": "./index.mjs"

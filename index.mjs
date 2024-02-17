@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { Command } from 'commander';
 import { exec } from 'child_process';
 import OpenAI from 'openai';
@@ -7,7 +9,6 @@ import { platform } from 'os';
 import assert from 'assert';
 
 const program = new Command();
-const openai = new OpenAI();
 
 /** @typedef {import("openai/src/resources/chat/completions").ChatCompletionMessageParam} ChatCompletionMessageParam */
 
@@ -15,13 +16,19 @@ const currentShell = process.env.SHELL;
 const currentPlatform = process.platform;
 
 program
-  .version('0.0.1')
-  .description('CLI tool')
+  .version('1.0.1')
+  .description('CLI Tool')
 
 program
   .option("-m, --metadata", "output user metadata")
   .argument('[query]', "Enter your input in plain text. This will be used to generate a CLI command.")
   .action(async () => {
+    if (!process.env.OPENAI_API_KEY) {
+      return console.log("Error: The OpenAI API Key is missing. Please ensure that you have added your OpenAI API Key to your environment variables, using the key OPENAI_API_KEY.")
+    }
+
+    const openai = new OpenAI();
+
     const options = program.opts();
 
     if (options.metadata) {
