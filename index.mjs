@@ -7,6 +7,9 @@ import ora from 'ora';
 import inquirer from 'inquirer';
 import { platform } from 'os';
 import assert from 'assert';
+import Conf from 'conf';
+
+const config = new Conf({ projectName: 'how' });
 
 const program = new Command();
 
@@ -16,24 +19,52 @@ const currentShell = process.env.SHELL;
 const currentPlatform = process.platform;
 
 program
-  .version('1.0.1')
-  .description('CLI Tool')
+  .version('1.0.2')
+  .description('Get CLI answers for plain-text queries')
 
 program
-  .option("-m, --metadata", "output user metadata")
-  .argument('[query]', "Enter your input in plain text. This will be used to generate a CLI command.")
+  .option("-d, --debug", "log debug data")
+  .option("-c, --config", "configure API key")
+  .argument('[query]', "Enter your query in plain text. This will be used to generate a CLI command.")
   .action(async () => {
-    if (!process.env.OPENAI_API_KEY) {
-      return console.log("Error: The OpenAI API Key is missing. Please ensure that you have added your OpenAI API Key to your environment variables, using the key OPENAI_API_KEY.")
-    }
-
-    const openai = new OpenAI();
-
     const options = program.opts();
 
-    if (options.metadata) {
+    if (options.debug) {
       return console.log({ currentShell, currentPlatform })
     }
+
+    let apiKey = config.get('apiKey') ?? process.env.OPENAI_API_KEY
+
+    let response
+    if (!apiKey || options.config) {
+      const MESSAGE = `${apiKey ? '' : "Missing OpenAI API Key. "}You can create or find your OpenAI API key at https://platform.openai.com/account/api-keys.`
+      console.log(MESSAGE)
+      response = await inquirer.prompt([{
+        type: 'input',
+        name: 'apiKey',
+        message: 'Paste your API key here:'
+      }]);
+
+      try {
+        const testClient = new OpenAI({ apiKey: response.apiKey })
+
+        /** @type ChatCompletionMessageParam[] */
+        const messages = [{ role: 'user', content: 'Respond with pong. Ping' }]
+
+        await testClient.chat.completions.create({
+          messages,
+          model: 'gpt-3.5-turbo-0125',
+        });
+      } catch (error) {
+        if (error.message) console.log(error.message)
+        return;
+      }
+
+      config.set('apiKey', response.apiKey)
+      apiKey = response.apiKey
+    }
+
+    const openai = new OpenAI({ apiKey });
 
     const query = process.argv.slice(1, process.argv.length).join(" ");
 
