@@ -1,6 +1,6 @@
 {
   "name": "hey-how",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "CLI Tool",
   "main": "index.mjs",
   "bin": {
@@ -14,6 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "commander": "^11.1.0",
+    "conf": "^12.0.0",
     "inquirer": "^9.2.11",
     "openai": "^4.14.2",
     "ora": "^7.0.1"
