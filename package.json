@@ -1,7 +1,7 @@
 {
   "name": "hey-how",
-  "version": "1.0.2",
-  "description": "CLI Tool",
+  "version": "1.0.3",
+  "description": "Get CLI answers for plain-text queries.",
   "main": "index.mjs",
   "bin": {
     "how": "./index.mjs"

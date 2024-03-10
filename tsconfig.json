@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
-    "module": "Node16",
+    "module": "NodeNext",
     "moduleResolution": "Node16",
     "allowJs": true,
     "checkJs": true,
-    "noEmit": true
+    "noEmit": true,
+    "resolveJsonModule": true
   }
 }

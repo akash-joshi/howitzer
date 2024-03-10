@@ -8,6 +8,9 @@ import inquirer from 'inquirer';
 import { platform } from 'os';
 import assert from 'assert';
 import Conf from 'conf';
+import fs from 'fs';
+
+const packageJson = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 
 const config = new Conf({ projectName: 'how' });
 
@@ -19,8 +22,8 @@ const currentShell = process.env.SHELL;
 const currentPlatform = process.platform;
 
 program
-  .version('1.0.2')
-  .description('Get CLI answers for plain-text queries')
+  .version(packageJson.version)
+  .description(packageJson.description)
 
 program
   .option("-d, --debug", "log debug data")
