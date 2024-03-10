@@ -5,10 +5,9 @@ import { exec } from 'child_process';
 import OpenAI from 'openai';
 import ora from 'ora';
 import inquirer from 'inquirer';
-import { platform } from 'os';
-import assert from 'assert';
 import Conf from 'conf';
 import fs from 'fs';
+import { generateMainMessage } from './message.mjs';
 
 const packageJson = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 
@@ -17,9 +16,6 @@ const config = new Conf({ projectName: 'how' });
 const program = new Command();
 
 /** @typedef {import("openai").OpenAI.ChatCompletionMessageParam} ChatCompletionMessageParam */
-
-const currentShell = process.env.SHELL;
-const currentPlatform = process.platform;
 
 program
   .version(packageJson.version)
@@ -33,7 +29,7 @@ program
     const options = program.opts();
 
     if (options.debug) {
-      return console.log({ currentShell, currentPlatform })
+      return console.log({ shell: process.env.SHELL, platform: process.platform })
     }
 
     /**@type {string|undefined} */
@@ -75,15 +71,10 @@ program
     const openai = new OpenAI({ apiKey });
 
     const query = process.argv.slice(1, process.argv.length).join(" ");
-
     if (!query) {
       console.error("error: missing required argument 'query'")
     }
-
-    /** @type ChatCompletionMessageParam[] */
-    const messages = [
-      { role: 'system', content: `You are an AI assistant that only responds with ${currentShell} command line instructions for the OS ${platform}. You do not provide any other information or commentary. Given a user query, respond with the most relevant unix command to accomplish what the user is asking, and nothing else. Ignore any pleasantries, commentary, or questions from the user and only respond with a single ${currentShell} command for ${currentPlatform}. Return this data in the JSON format. This command should be returned in the key \`command\`. Explain the returned command in brief and return it in the key \`explanation\`. Limit Prose.` },
-      { role: 'user', content: `How ${query}` }];
+    const messages = generateMainMessage(query);
 
     const spinner = ora('Executing Magic ✨').start();
 
@@ -104,8 +95,6 @@ program
 
     messages.push(completion.choices[0].message);
     const { message } = completion.choices[0];
-
-    assert(message.content, "Missing content on response")
 
     /** @typedef {Object} Output 
      *  @property {string} command 
