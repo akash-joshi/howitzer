@@ -7,6 +7,7 @@
     "how": "./index.mjs"
   },
   "scripts": {
+    "type-check": "tsc --noEmit",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -21,5 +22,9 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^9.0.7",
+    "typescript": "^5.4.2"
   }
 }
