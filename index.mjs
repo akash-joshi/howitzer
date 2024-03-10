@@ -13,7 +13,7 @@ const config = new Conf({ projectName: 'how' });
 
 const program = new Command();
 
-/** @typedef {import("openai/src/resources/chat/completions").ChatCompletionMessageParam} ChatCompletionMessageParam */
+/** @typedef {import("openai").OpenAI.ChatCompletionMessageParam} ChatCompletionMessageParam */
 
 const currentShell = process.env.SHELL;
 const currentPlatform = process.platform;
@@ -33,7 +33,12 @@ program
       return console.log({ currentShell, currentPlatform })
     }
 
-    let apiKey = config.get('apiKey') ?? process.env.OPENAI_API_KEY
+    /**@type {string|undefined} */
+    // @ts-ignore - Run-time type assertion is overkill.
+    const configKey = config.get('apiKey')
+
+    /**@type {string|undefined} */
+    let apiKey = configKey ?? process.env.OPENAI_API_KEY
 
     let response
     if (!apiKey || options.config) {
@@ -56,7 +61,7 @@ program
           model: 'gpt-3.5-turbo-0125',
         });
       } catch (error) {
-        if (error.message) console.log(error.message)
+        if (error instanceof Error) console.log(error.message)
         return;
       }
 
