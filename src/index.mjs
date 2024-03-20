@@ -6,9 +6,19 @@ import inquirer from 'inquirer';
 import Conf from 'conf';
 import fs from 'fs';
 import { generateMainMessage } from './message.mjs';
+import { fileURLToPath } from 'url';
+import path from 'path';
 
 export const cli = () => {
-  const packageJson = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+
+  // Convert the URL to a file path
+  const __filename = fileURLToPath(import.meta.url);
+  // Get the directory name of the current module
+  const __dirname = path.dirname(__filename);
+
+  // Correctly construct the path to package.json
+  const packageJsonPath = path.join(__dirname, '..', 'package.json');
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 
   const config = new Conf({ projectName: 'how' });
 

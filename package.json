@@ -1,6 +1,6 @@
 {
   "name": "hey-how",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Get CLI answers for plain-text queries.",
   "main": "index.mjs",
   "bin": {
