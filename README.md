@@ -6,7 +6,7 @@
 
 No more faffing about with Stackoverflow or other websites, iterate on and understand commands in your CLI directly!
 
-https://github.com/akash-joshi/howtf/assets/22196279/f680d487-5176-46ee-a5b5-b61636604555
+https://github.com/akash-joshi/how-cli-copilot/assets/22196279/947da09c-a1fe-4e4f-a1ff-6c0752a8c0e6
 
 ### Installation
 
