@@ -4,7 +4,7 @@
   "description": "Instant CLI dev helper. No StackOverflow required 🧨.",
   "main": "index.mjs",
   "bin": {
-    "how": "./index.mjs"
+    "how": "./slide5/index2.mjs"
   },
   "scripts": {
     "type-check": "tsc --noEmit",
