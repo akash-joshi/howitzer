@@ -1,7 +1,7 @@
 {
-  "name": "hey-how",
-  "version": "1.1.2",
-  "description": "Get CLI answers for plain-text queries.",
+  "name": "howitzer",
+  "version": "1.0.0",
+  "description": "Instant CLI dev helper. No StackOverflow required 🧨.",
   "main": "index.mjs",
   "bin": {
     "how": "./index.mjs"
@@ -17,7 +17,7 @@
     "commander": "^11.1.0",
     "conf": "^12.0.0",
     "inquirer": "^9.2.11",
-    "openai": "^4.14.2",
+    "openai": "^4.52.7",
     "ora": "^7.0.1"
   },
   "engines": {
