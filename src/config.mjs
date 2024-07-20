@@ -10,7 +10,7 @@ export const configurator = (/** @type {{ config: Conf }} */ { config }) => {
   const modelCopy = `Model${model ? ` (${model})` : ""}`;
 
   /** @type {import("openai").OpenAI.ChatModel[]} */
-  const modelChoices = ["gpt-3.5-turbo", "gpt-4-turbo", "gpt-4o"];
+  const modelChoices = ["gpt-3.5-turbo", "gpt-4-turbo", "gpt-4o", "gpt-4o-mini"];
 
   inquirer
     .prompt([
