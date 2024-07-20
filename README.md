@@ -1,4 +1,4 @@
-## How CLI Tool
+## Howitzer CLI Helper
 
 ### Description
 
