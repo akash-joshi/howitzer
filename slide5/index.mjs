@@ -2,19 +2,20 @@
 
 import { Command } from "commander";
 import { OpenAI } from "openai";
+import { readFileSync } from "node:fs";
 
-import packageJson from "../package.json";
+const packageJson = JSON.parse(readFileSync(`./package.json`, "utf-8"));
 
 const program = new Command();
 
 program
-  .version("0.0.1")
-  .description("A CLI tool to generate commands using AI");
+  .version(packageJson.version)
+  .description(packageJson.description);
 
 const client = new OpenAI();
 
 const shell = process.env.SHELL;
-const { platform } = process;
+const { platform } = process
 
 /** @typedef {import("openai").OpenAI.ChatCompletionMessageParam} ChatMessage  */
 
@@ -25,7 +26,8 @@ program
     const messages = [
       {
         role: "system",
-        content: `You are an AI assistant that only responds with ${shell} command line instructions for the OS ${platform}. You do not provide any other information or commentary. Given a user query, respond with the most relevant command to accomplish what the user is asking, and nothing else. Ignore any pleasantries, commentary, or questions from the user and only respond with a single ${shell} command for ${platform}.`,
+        content:
+          `You are an AI assistant that only responds with ${shell} command line instructions for the OS ${platform}. You do not provide any other information or commentary. Given a user query, respond with the most relevant ${shell} command to accomplish what the user is asking, and nothing else. Ignore any pleasantries, commentary, or questions from the user and only respond with a single ${shell} command for ${platform}.`,
       },
       { role: "user", content: query },
     ];
