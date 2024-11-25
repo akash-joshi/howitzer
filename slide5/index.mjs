@@ -4,7 +4,7 @@ import { Command } from "commander";
 import { OpenAI } from "openai";
 import { readFileSync } from "node:fs";
 
-const packageJson = JSON.parse(readFileSync(`${__dirname}/package.json`, "utf-8"));
+const packageJson = JSON.parse(readFileSync(`${__dirname}/../package.json`, "utf-8"));
 
 const program = new Command();
 
@@ -37,7 +37,7 @@ program
       model: "gpt-4o",
     });
 
-    console.log({ choice: completion.choices[0] });
+    console.log({ choice: completion.choices[0].message });
   });
 
 program.parse();

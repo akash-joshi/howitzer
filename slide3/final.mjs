@@ -31,7 +31,7 @@ program
       model: "gpt-4o",
     });
 
-    console.log({ choice: completion.choices[0] });
+    console.log({ choice: completion.choices[0].message });
   });
 
 program.parse();
