@@ -129,29 +129,29 @@ export const cli = () => {
       console.log(output.explanation);
 
       let userResponse;
-      do {
-        const response = await inquirer.prompt([
-          {
-            type: "list",
-            name: "userResponse",
-            message: "Do you wanna run this command?",
-            choices: ["Yes", "No"],
-          },
-        ]);
-        userResponse = response.userResponse;
 
-        if (userResponse === "Yes") {
-          exec(output.command, (error, stdout, stderr) => {
-            if (error) {
-              return console.error(error.message);
-            }
-            if (stderr) {
-              return console.error(stderr);
-            }
-            console.log(stdout);
-          });
-        }
-      } while (userResponse === "Explain");
+      response = await inquirer.prompt([
+        {
+          type: "list",
+          name: "userResponse",
+          message: "Do you wanna run this command?",
+          choices: ["Yes", "No"],
+        },
+      ]);
+      userResponse = response.userResponse;
+
+      if (userResponse === "Yes") {
+        const childProcess = exec(output.command);
+        childProcess.stdout.on('data', (data) => {
+          console.log(data);
+        });
+        childProcess.stderr.on('data', (data) => {
+          console.error(data);
+        });
+        childProcess.on('error', (error) => {
+          console.error(error.message);
+        });
+      }
     });
 
   program.parse();
