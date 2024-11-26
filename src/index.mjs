@@ -98,60 +98,78 @@ export const cli = () => {
       }
       const messages = generateMainMessage(query);
 
-      const spinner = ora("Executing Magic ✨").start();
+      let errors = [];
 
-      let completion;
-      try {
-        completion = await openai.chat.completions.create({
-          messages,
-          model,
-          response_format: { type: "json_object" },
-        });
-      } catch (error) {
-        console.error(error);
-      }
+      do {
+        if (errors.length) {
+          messages.push({
+            role: "user",
+            content: `The command returned the following errors: ${errors.join(
+              "\n"
+            )}. Please fix the errors and return the updated command using the previously specified format.`,
+          });
+        }
 
-      spinner.stop();
+        const spinner = ora(errors.length ? "Fixing Errors ✨" : "Executing Magic ✨").start();
 
-      if (!completion) return;
+        let completion;
+        try {
+          completion = await openai.chat.completions.create({
+            messages,
+            model,
+            response_format: { type: "json_object" },
+          });
+        } catch (error) {
+          console.error(error);
+        }
 
-      messages.push(completion.choices[0].message);
-      const { message } = completion.choices[0];
+        spinner.stop();
 
-      /** @typedef {Object} Output
-       *  @property {string} command
-       *  @property {string} explanation
-       */
-      /** @type {Output} */
-      const output = JSON.parse(message.content);
+        if (!completion) return;
 
-      console.log(`By running: "\x1b[1m${output.command}\x1b[0m"`);
-      console.log(output.explanation);
+        messages.push(completion.choices[0].message);
+        const { message } = completion.choices[0];
 
-      let userResponse;
+        /** @typedef {Object} Output
+         *  @property {string} command
+         *  @property {string} explanation
+         *  @property {string} warning
+         */
+        /** @type {Output} */
+        const output = JSON.parse(message.content);
 
-      response = await inquirer.prompt([
-        {
-          type: "list",
-          name: "userResponse",
-          message: "Do you wanna run this command?",
-          choices: ["Yes", "No"],
-        },
-      ]);
-      userResponse = response.userResponse;
+        console.log(`By running: "\x1b[1m${output.command}\x1b[0m"`);
+        console.log(`\x1b[1mExplanation:\x1b[0m ${output.explanation}`);
+        if (output.warning) {
+          console.log(`\x1b[1mWarning:\x1b[0m ${output.warning}`);
+        }
 
-      if (userResponse === "Yes") {
-        const childProcess = exec(output.command);
-        childProcess.stdout.on('data', (data) => {
-          console.log(data);
-        });
-        childProcess.stderr.on('data', (data) => {
-          console.error(data);
-        });
-        childProcess.on('error', (error) => {
-          console.error(error.message);
-        });
-      }
+        errors = [];
+        response = await inquirer.prompt([
+          {
+            type: "list",
+            name: "userResponse",
+            message: "Do you wanna run this command?",
+            choices: ["Yes", "No"],
+          },
+        ]);
+        const userResponse = response.userResponse;
+
+        if (userResponse === "Yes") {
+          const childProcess = exec(output.command);
+          childProcess.stdout.on("data", (data) => {
+            console.log(data);
+          });
+          childProcess.stderr.on("data", (data) => {
+            console.error(data);
+            errors.push(data);
+          });
+          childProcess.on("error", (error) => {
+            console.error(error.message);
+            errors.push(error.message);
+          });
+        }
+      } while (errors.length);
     });
 
   program.parse();
