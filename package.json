@@ -1,6 +1,6 @@
 {
   "name": "howitzer",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "Instant CLI dev helper. No StackOverflow required 🧨.",
   "main": "index.mjs",
   "bin": {
