@@ -10,7 +10,7 @@ https://github.com/akash-joshi/how-cli-copilot/assets/22196279/947da09c-a1fe-4e4
 
 ### Installation
 
-1. Run `npm i -g hey-how` to install the tool globally.
+1. Run `npm i -g howitzer` to install the tool globally.
 2. Run `how <your_query>` to run any queries in your CLI.
 
 ### Usage
