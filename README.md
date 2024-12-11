@@ -13,6 +13,15 @@ https://github.com/akash-joshi/how-cli-copilot/assets/22196279/947da09c-a1fe-4e4
 1. Run `npm i -g howitzer` to install the tool globally.
 2. Run `how <your_query>` to run any queries in your CLI.
 
+### Features
+
+- 🤖 Supports all available OpenAI models
+- 🔒 Secure Configuration Management
+- 🎯 Context-Aware Command Generation
+- ⚠️ Smart Warning System for Dangerous Operations
+- 🔄 Automatic Error Recovery
+- 💡 Command Explanations
+
 ### Usage
 
 ```bash
@@ -38,11 +47,11 @@ how do i convert random.pdf to jpeg
 
 The tool acts as an AI assistant that responds with Unix command line instructions based on the provided query. It returns the most relevant Unix command to accomplish what the user is asking. The response is provided in JSON format and includes the command along with a brief explanation.
 
-### Execution
+### How It Works
 
-- Upon receiving the command, the tool executes it with a prompt asking if the user wants to run the command.
-- If the user agrees, the command is executed, and the output is displayed.
-- If the user disagrees, the execution stops.
+1. **Smart Command Generation**: The tool understands your current directory context and generates appropriate commands
+2. **Safety First**: Warns about potentially dangerous operations and asks for confirmation
+3. **Error Recovery**: Automatically attempts to fix failed commands with smart suggestions
 
 ### Dependencies
 
