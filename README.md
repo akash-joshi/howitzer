@@ -6,7 +6,7 @@
 
 No more faffing about with Stackoverflow or other websites, iterate on and understand commands in your CLI directly!
 
-https://github.com/akash-joshi/how-cli-copilot/assets/22196279/947da09c-a1fe-4e4f-a1ff-6c0752a8c0e6
+https://github.com/user-attachments/assets/03f81b7c-0da9-4184-9522-32c1983c042f
 
 ### Installation
 
